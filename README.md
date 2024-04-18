@@ -1,4 +1,4 @@
-# Drawing Practice with Canvas
+#  Practice Clipping Object Canvas
 
 This repository used for learning:
 
