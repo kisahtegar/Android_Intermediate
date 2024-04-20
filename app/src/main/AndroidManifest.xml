@@ -12,6 +12,23 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AndroidIntermediate"
         tools:targetApi="31">
+
+        <service
+            android:name="com.kisahcode.androidintermediate.StackWidgetService"
+            android:permission="android.permission.BIND_REMOTEVIEWS" />
+
+        <receiver
+            android:name=".ImagesBannerWidget"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/images_banner_widget_info" />
+        </receiver>
+
         <activity
             android:name=".MainActivity"
             android:exported="true">
