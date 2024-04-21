@@ -1,4 +1,4 @@
-# Localization of Text to Support Multi-Language
+# Adaptive Layout to Support Multiple Screen Sizes
 
 This repository used for learning:
 
