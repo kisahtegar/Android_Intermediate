@@ -1,4 +1,4 @@
-# Implement Service Class for Background Task
+# Implement Service Class for Foreground Task
 
 This repository used for learning:
 
@@ -10,4 +10,4 @@ This repository used for learning:
 | Language                      | Kotlin                         |
 | Build Configuration Language  | Kotlin DSL                     |
 
-<img src="preview.gif" alt="Preview 1" width="909" height="606">
+<img src="preview.gif" alt="Preview 1" width="1854" height="843">
