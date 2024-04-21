@@ -61,8 +61,10 @@ class MainActivity : AppCompatActivity() {
      *
      * This function retrieves product details from the remote data source and populates the UI
      * elements with the retrieved data, applying formatting where necessary.
+     * Additionally, it sets up accessibility information for UI elements.
      */
     private fun setupData() {
+        // Initialize the repository to fetch product details.
         val repository = RemoteDataSource(this)
         // Retrieve product details from the remote data source.
         val product = repository.getDetailProduct().apply {
@@ -78,6 +80,32 @@ class MainActivity : AppCompatActivity() {
                 priceTextView.text = price.withCurrencyFormat()
                 dateTextView.text = getString(R.string.dateFormat, date.withDateFormat())
                 ratingTextView.text = getString(R.string.ratingFormat, rating.withNumberingFormat(), countRating.withNumberingFormat())
+            }
+        }
+
+        // Set up accessibility information for UI elements.
+        setupAccessibility(product)
+    }
+
+    /**
+     * Set up accessibility information for UI elements.
+     *
+     * @param productModel The product model containing information about the product.
+     */
+    private fun setupAccessibility(productModel: ProductModel) {
+        productModel.apply {
+            binding.apply {
+                // Set content descriptions for UI elements to improve accessibility.
+                settingImageView.contentDescription = getString(R.string.settingDescription)
+                previewImageView.contentDescription = getString(R.string.previewDescription)
+                colorTextView.contentDescription = getString(R.string.colorDescription, color)
+                sizeTextView.contentDescription = getString(R.string.sizeDescription, size)
+                ratingTextView.contentDescription = getString(
+                    R.string.ratingDescription,
+                    rating.withNumberingFormat(),
+                    countRating.withNumberingFormat()
+                )
+                storeTextView.contentDescription = getString(R.string.storeDescription, store)
             }
         }
     }
