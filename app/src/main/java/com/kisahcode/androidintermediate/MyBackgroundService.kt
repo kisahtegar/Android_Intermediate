@@ -12,9 +12,13 @@ import kotlinx.coroutines.launch
 
 /**
  * A background service that performs tasks asynchronously.
+ *
+ * This service runs in the background to perform tasks that don't require user interaction.
+ * It uses coroutines to execute tasks asynchronously without blocking the main thread.
  */
 class MyBackgroundService : Service() {
 
+    // Coroutine job and scope for background tasks.
     private val serviceJob = Job()
     private val serviceScope = CoroutineScope(Dispatchers.Main + serviceJob)
 
@@ -58,6 +62,12 @@ class MyBackgroundService : Service() {
         Log.d(TAG, "onDestroy: Service dihentikan.")
     }
 
+    /**
+     * Called when a client binds to the service.
+     *
+     * @param intent The Intent that was used to bind to this service.
+     * @return An IBinder object that clients can use to interact with the service.
+     */
     override fun onBind(intent: Intent): IBinder {
         throw UnsupportedOperationException("Not yet implemented")
     }
