@@ -22,9 +22,13 @@ import kotlinx.coroutines.launch
 
 /**
  * A foreground service that performs tasks asynchronously.
+ *
+ * This service runs in the foreground to perform long-running tasks without being interrupted by
+ * the system. It displays a notification to indicate its ongoing operation.
  */
 class MyForegroundService : Service() {
 
+    // Coroutine job and scope for background tasks.
     private val serviceJob = Job()
     private val serviceScope = CoroutineScope(Dispatchers.Main + serviceJob)
 
@@ -87,6 +91,12 @@ class MyForegroundService : Service() {
         Log.d(MyBackgroundService.TAG, "onDestroy: Service dihentikan.")
     }
 
+    /**
+     * Called when a client binds to the service.
+     *
+     * @param intent The Intent that was used to bind to this service.
+     * @return An IBinder object that clients can use to interact with the service.
+     */
     override fun onBind(intent: Intent): IBinder {
         throw UnsupportedOperationException("Not yet implemented")
     }
