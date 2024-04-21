@@ -1,4 +1,4 @@
-# Implement media Intent Gallery to pick and show image.
+# Implement media CameraX to take photo and show it.
 
 This repository used for learning:
 

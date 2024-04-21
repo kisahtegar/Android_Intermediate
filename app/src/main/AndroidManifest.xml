@@ -2,6 +2,11 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <!-- Permission to write to external storage, restricted to versions up to API level 28. -->
+    <uses-permission
+        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        android:maxSdkVersion="28" />
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -12,17 +17,30 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AndroidIntermediate"
         tools:targetApi="31">
+
+        <!-- MainActivity declaration -->
         <activity
             android:name=".MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
-        <!-- Trigger Google Play services to install the backport photo picker module. -->
+        <!-- Content Provider for use FileProvider on versions below Android Q to be able to access files in storage -->
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths"/>
+        </provider>
+
+        <!-- Service to trigger Google Play services for backport photo picker module installation. -->
+        <!-- Suppressing inspection for missing class -->
         <!--suppress AndroidDomInspection -->
         <service android:name="com.google.android.gms.metadata.ModuleDependencies"
             android:enabled="false"

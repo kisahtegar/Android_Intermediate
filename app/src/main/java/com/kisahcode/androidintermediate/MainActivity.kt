@@ -61,8 +61,26 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Starts the camera activity to capture an image.
+     *
+     * Retrieves the URI for the captured image and launches the camera intent.
+     */
     private fun startCamera() {
-        Toast.makeText(this, "Fitur ini belum tersedia", Toast.LENGTH_SHORT).show()
+        // Get the URI for the captured image.
+        currentImageUri = getImageUri(this)
+        // Launch the camera intent to capture an image.
+        launcherIntentCamera.launch(currentImageUri)
+    }
+
+    // Activity result launcher for camera capture.
+    private val launcherIntentCamera = registerForActivityResult(
+        ActivityResultContracts.TakePicture()
+    ) { isSuccess ->
+        // Display the captured image if the capture process is successful.
+        if (isSuccess) {
+            showImage()
+        }
     }
 
     private fun startCameraX() {
