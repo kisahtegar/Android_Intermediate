@@ -1,4 +1,4 @@
-# Implement media upload using retrofit.
+#  Implement to upload image using retrofit
 
 This repository used for learning:
 
