@@ -1,4 +1,4 @@
-# Implement media CameraX to take photo and show it.
+# Implement media Camera to take photo and show it.
 
 This repository used for learning:
 
