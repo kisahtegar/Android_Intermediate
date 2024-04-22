@@ -6,14 +6,25 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.widget.Toast
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
+import androidx.lifecycle.lifecycleScope
+import com.google.gson.Gson
 import com.kisahcode.androidintermediate.CameraActivity.Companion.CAMERAX_RESULT
+import com.kisahcode.androidintermediate.api.ApiConfig
+import com.kisahcode.androidintermediate.api.FileUploadResponse
 import com.kisahcode.androidintermediate.databinding.ActivityMainBinding
+import kotlinx.coroutines.launch
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.asRequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
+import retrofit2.HttpException
 
 
 /**
@@ -21,7 +32,7 @@ import com.kisahcode.androidintermediate.databinding.ActivityMainBinding
  *
  * This activity demonstrates the usage of intent to pick visual media from the device gallery.
  * It allows users to select an image from the gallery and display it in an ImageView.
- * Currently, camera functionalities are not implemented, and uploading the selected image is a placeholder.
+ * Currently, camera functionalities are implemented, and uploading the selected image is a placeholder.
  */
 class MainActivity : AppCompatActivity() {
 
@@ -154,8 +165,69 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Uploads the selected image to the server.
+     *
+     * This function retrieves the image URI, converts it to a File, reduces its size, and then
+     * uploads it to the server along with a description. It displays a loading indicator while
+     * the upload is in progress and shows a toast message upon completion or error.
+     */
     private fun uploadImage() {
-        Toast.makeText(this, "Fitur ini belum tersedia", Toast.LENGTH_SHORT).show()
+        currentImageUri?.let { uri ->
+            val imageFile = uriToFile(uri, this).reduceFileImage()
+            Log.d("Image File", "showImage: ${imageFile.path}")
+            val description = "Ini adalah deksripsi gambar"
+
+            showLoading(true)
+
+            // Convert description and image file to request body parts
+            val requestBody = description.toRequestBody("text/plain".toMediaType())
+            val requestImageFile = imageFile.asRequestBody("image/jpeg".toMediaType())
+            val multipartBody = MultipartBody.Part.createFormData(
+                "photo",
+                imageFile.name,
+                requestImageFile
+            )
+
+            lifecycleScope.launch {
+                try {
+                    // Upload image to the server
+                    val apiService = ApiConfig.getApiService()
+                    val successResponse = apiService.uploadImage(multipartBody, requestBody)
+
+                    // Show success message
+                    showToast(successResponse.message)
+                    showLoading(false)
+                } catch (e: HttpException) {
+                    // Handle HTTP error
+                    val errorBody = e.response()?.errorBody()?.string()
+                    val errorResponse = Gson().fromJson(errorBody, FileUploadResponse::class.java)
+
+                    // Show error message
+                    showToast(errorResponse.message)
+                    showLoading(false)
+                }
+            }
+
+        } ?: showToast(getString(R.string.empty_image_warning))
+    }
+
+    /**
+     * Shows or hides the loading indicator based on the isLoading parameter.
+     *
+     * @param isLoading Boolean indicating whether the loading indicator should be displayed or hidden.
+     */
+    private fun showLoading(isLoading: Boolean) {
+        binding.progressIndicator.visibility = if (isLoading) View.VISIBLE else View.GONE
+    }
+
+    /**
+     * Displays a toast message with the given message.
+     *
+     * @param message The message to be displayed in the toast.
+     */
+    private fun showToast(message: String) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
     }
 
     companion object {

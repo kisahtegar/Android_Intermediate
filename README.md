@@ -1,4 +1,4 @@
-# Implement media CameraX to take photo and show it.
+# Implement media upload using retrofit.
 
 This repository used for learning:
 
