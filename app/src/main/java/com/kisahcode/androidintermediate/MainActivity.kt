@@ -1,5 +1,8 @@
 package com.kisahcode.androidintermediate
 
+import android.Manifest
+import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
@@ -7,6 +10,9 @@ import android.widget.Toast
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
+import androidx.core.net.toUri
+import com.kisahcode.androidintermediate.CameraActivity.Companion.CAMERAX_RESULT
 import com.kisahcode.androidintermediate.databinding.ActivityMainBinding
 
 
@@ -25,10 +31,42 @@ class MainActivity : AppCompatActivity() {
     // URI of the currently selected image.
     private var currentImageUri: Uri? = null
 
+    /**
+     * Activity result launcher for permission requests.
+     *
+     * It handles the result of the permission request and shows appropriate toast messages.
+     */
+    private val requestPermissionLauncher =
+        registerForActivityResult(
+            ActivityResultContracts.RequestPermission()
+        ) { isGranted: Boolean ->
+            if (isGranted) {
+                Toast.makeText(this, "Permission request granted", Toast.LENGTH_LONG).show()
+            } else {
+                Toast.makeText(this, "Permission request denied", Toast.LENGTH_LONG).show()
+            }
+        }
+
+    /**
+     * Checks if all required permissions are granted.
+     *
+     * @return True if all permissions are granted, false otherwise.
+     */
+    private fun allPermissionsGranted() =
+        ContextCompat.checkSelfPermission(
+            this,
+            REQUIRED_PERMISSION
+        ) == PackageManager.PERMISSION_GRANTED
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        // Checks if all required permissions are granted.
+        if (!allPermissionsGranted()) {
+            requestPermissionLauncher.launch(REQUIRED_PERMISSION)
+        }
 
         // Set click listeners for the buttons.
         binding.galleryButton.setOnClickListener { startGallery() }
@@ -83,8 +121,27 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Starts the CameraX activity to capture images.
+     */
     private fun startCameraX() {
-        Toast.makeText(this, "Fitur ini belum tersedia", Toast.LENGTH_SHORT).show()
+        val intent = Intent(this, CameraActivity::class.java)
+        launcherIntentCameraX.launch(intent)
+    }
+
+    /**
+     * Activity result launcher for starting the CameraX activity.
+     *
+     * It handles the result of the CameraX activity and retrieves the captured image URI.
+     */
+    private val launcherIntentCameraX = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) {
+        if (it.resultCode == CAMERAX_RESULT) {
+            // Retrieve the captured image URI from the result data and display the image.
+            currentImageUri = it.data?.getStringExtra(CameraActivity.EXTRA_CAMERAX_IMAGE)?.toUri()
+            showImage()
+        }
     }
 
     /**
@@ -99,5 +156,10 @@ class MainActivity : AppCompatActivity() {
 
     private fun uploadImage() {
         Toast.makeText(this, "Fitur ini belum tersedia", Toast.LENGTH_SHORT).show()
+    }
+
+    companion object {
+        // Required permission for accessing the camera.
+        private const val REQUIRED_PERMISSION = Manifest.permission.CAMERA
     }
 }
