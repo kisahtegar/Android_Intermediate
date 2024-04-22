@@ -40,3 +40,24 @@ This link contains a android for Localization & Accessibility sources:
 - [adaptive-layout: Adaptive Layout to Support Multiple Screen Sizes.](https://github.com/kisahtegar/Android_Intermediate/tree/adaptive-layout)
 - [format-information: Formatting in Information.](https://github.com/kisahtegar/Android_Intermediate/tree/format-information)
 - [accessibility-information: Accessibility in Information.](https://github.com/kisahtegar/Android_Intermediate/tree/accessibility-information)
+
+## 🛠️️ Service
+
+This link contains a android for service sources:
+
+- [service-background: Implement Service Class for Background Service.](https://github.com/kisahtegar/Android_Intermediate/tree/service-background)
+- [service-foreground: Implement Service Class for Foreground Service.](https://github.com/kisahtegar/Android_Intermediate/tree/service-foreground)
+- [service-bound: Implement Service Class for Bound Service.](https://github.com/kisahtegar/Android_Intermediate/tree/service-bound)
+
+## 📸 Media
+
+This link contains a android for media sources:
+
+- [media-soundpool: Implement media SoundPool to play sound..](https://github.com/kisahtegar/Android_Intermediate/tree/media-soundpool)
+- [media-mediaplayer: Implement media MediaPLayer to play sound/mp3.](https://github.com/kisahtegar/Android_Intermediate/tree/media-mediaplayer)
+- [media-exoplayer: Implement media ExoPlayer to play video.](https://github.com/kisahtegar/Android_Intermediate/tree/media-exoplayer)
+- [media-intent-gallery: Implement media Intent Gallery to pick and show image.](https://github.com/kisahtegar/Android_Intermediate/tree/media-intent-gallery)
+- [media-intent-camera: Implement media Camera to take photo and show it.](https://github.com/kisahtegar/Android_Intermediate/tree/media-intent-camera)
+- [media-camerax: Implement media CameraX to take photo and show it.](https://github.com/kisahtegar/Android_Intermediate/tree/media-camerax)
+- [media-upload: Implement to upload image using retrofit.](https://github.com/kisahtegar/Android_Intermediate/tree/media-upload)
+- [media-repository-injection: Refactoring code for repository and injection.](https://github.com/kisahtegar/Android_Intermediate/tree/media-repository-injection)
