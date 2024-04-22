@@ -9,11 +9,13 @@ import android.content.ContentValues
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Matrix
 import android.net.Uri
 import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
 import androidx.core.content.FileProvider
+import androidx.exifinterface.media.ExifInterface
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
@@ -139,7 +141,7 @@ fun uriToFile(imageUri: Uri, context: Context): File {
 fun File.reduceFileImage(): File {
     // Initialize variables
     val file = this
-    val bitmap = BitmapFactory.decodeFile(file.path)
+    val bitmap = BitmapFactory.decodeFile(file.path).getRotatedBitmap(file)
     var compressQuality = 100
     var streamLength: Int
 
@@ -156,4 +158,53 @@ fun File.reduceFileImage(): File {
     bitmap?.compress(Bitmap.CompressFormat.JPEG, compressQuality, FileOutputStream(file))
 
     return file
+}
+
+/**
+ * Retrieves a rotated bitmap based on the orientation information extracted from the given file's Exif data.
+ *
+ * This function is particularly useful for handling images that may have been captured in different
+ * orientations.
+ *
+ * @param file The File object representing the image file from which the orientation information will be extracted.
+ * @return A rotated Bitmap object, adjusted according to the orientation information.
+ */
+fun Bitmap.getRotatedBitmap(file: File): Bitmap? {
+    // Retrieve the orientation information from the Exif data of the image file
+    val orientation = ExifInterface(file).getAttributeInt(
+        ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_UNDEFINED
+    )
+
+    // Rotate the bitmap based on the orientation information
+    return when (orientation) {
+        ExifInterface.ORIENTATION_ROTATE_90 -> rotateImage(this, 90F)
+        ExifInterface.ORIENTATION_ROTATE_180 -> rotateImage(this, 180F)
+        ExifInterface.ORIENTATION_ROTATE_270 -> rotateImage(this, 270F)
+        ExifInterface.ORIENTATION_NORMAL -> this
+        else -> this // Return the bitmap as is if no rotation is needed
+    }
+}
+
+/**
+ * Rotates the given Bitmap image by the specified angle.
+ *
+ * @param source The source Bitmap object to be rotated.
+ * @param angle The angle of rotation in degrees.
+ * @return A new rotated Bitmap object.
+ */
+fun rotateImage(source: Bitmap, angle: Float): Bitmap? {
+    // Create a new matrix for rotation
+    val matrix = Matrix()
+    matrix.postRotate(angle)
+
+    // Apply rotation to the source Bitmap and create a new rotated Bitmap
+    return Bitmap.createBitmap(
+        source, // Source Bitmap object
+        0,      // X coordinate of the top-left corner of the source rectangle
+        0,      // Y coordinate of the top-left corner of the source rectangle
+        source.width,  // Width of the source rectangle
+        source.height, // Height of the source rectangle
+        matrix, // Rotation matrix
+        true    // Filter to be used when the source pixels are transformed
+    )
 }

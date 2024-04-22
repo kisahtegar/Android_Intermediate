@@ -59,4 +59,6 @@ dependencies {
     implementation(libs.converter.gson)
     implementation(libs.logging.interceptor)
     implementation(libs.androidx.lifecycle.runtime.ktx) // For lifecycleScope
+
+    implementation(libs.androidx.exifinterface)
 }
