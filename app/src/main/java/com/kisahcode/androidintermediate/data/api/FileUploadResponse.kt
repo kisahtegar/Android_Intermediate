@@ -1,4 +1,4 @@
-package com.kisahcode.androidintermediate.api
+package com.kisahcode.androidintermediate.data.api
 
 import com.google.gson.annotations.SerializedName
 

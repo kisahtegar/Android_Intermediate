@@ -10,14 +10,16 @@ import android.view.View
 import android.widget.Toast
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
 import androidx.lifecycle.lifecycleScope
 import com.google.gson.Gson
 import com.kisahcode.androidintermediate.CameraActivity.Companion.CAMERAX_RESULT
-import com.kisahcode.androidintermediate.api.ApiConfig
-import com.kisahcode.androidintermediate.api.FileUploadResponse
+import com.kisahcode.androidintermediate.data.ResultState
+import com.kisahcode.androidintermediate.data.api.ApiConfig
+import com.kisahcode.androidintermediate.data.api.FileUploadResponse
 import com.kisahcode.androidintermediate.databinding.ActivityMainBinding
 import kotlinx.coroutines.launch
 import okhttp3.MediaType.Companion.toMediaType
@@ -41,6 +43,10 @@ class MainActivity : AppCompatActivity() {
 
     // URI of the currently selected image.
     private var currentImageUri: Uri? = null
+
+    private val viewModel by viewModels<MainViewModel> {
+        ViewModelFactory.getInstance()
+    }
 
     /**
      * Activity result launcher for permission requests.
@@ -178,34 +184,59 @@ class MainActivity : AppCompatActivity() {
             Log.d("Image File", "showImage: ${imageFile.path}")
             val description = "Ini adalah deksripsi gambar"
 
-            showLoading(true)
 
-            // Convert description and image file to request body parts
-            val requestBody = description.toRequestBody("text/plain".toMediaType())
-            val requestImageFile = imageFile.asRequestBody("image/jpeg".toMediaType())
-            val multipartBody = MultipartBody.Part.createFormData(
-                "photo",
-                imageFile.name,
-                requestImageFile
-            )
+            // Before implement repository and injection
 
-            lifecycleScope.launch {
-                try {
-                    // Upload image to the server
-                    val apiService = ApiConfig.getApiService()
-                    val successResponse = apiService.uploadImage(multipartBody, requestBody)
+//            showLoading(true)
+//
+//            // Convert description and image file to request body parts
+//            val requestBody = description.toRequestBody("text/plain".toMediaType())
+//            val requestImageFile = imageFile.asRequestBody("image/jpeg".toMediaType())
+//            val multipartBody = MultipartBody.Part.createFormData(
+//                "photo",
+//                imageFile.name,
+//                requestImageFile
+//            )
+//
+//            lifecycleScope.launch {
+//                try {
+//                    // Upload image to the server
+//                    val apiService = ApiConfig.getApiService()
+//                    val successResponse = apiService.uploadImage(multipartBody, requestBody)
+//
+//                    // Show success message
+//                    showToast(successResponse.message)
+//                    showLoading(false)
+//                } catch (e: HttpException) {
+//                    // Handle HTTP error
+//                    val errorBody = e.response()?.errorBody()?.string()
+//                    val errorResponse = Gson().fromJson(errorBody, FileUploadResponse::class.java)
+//
+//                    // Show error message
+//                    showToast(errorResponse.message)
+//                    showLoading(false)
+//                }
+//            }
 
-                    // Show success message
-                    showToast(successResponse.message)
-                    showLoading(false)
-                } catch (e: HttpException) {
-                    // Handle HTTP error
-                    val errorBody = e.response()?.errorBody()?.string()
-                    val errorResponse = Gson().fromJson(errorBody, FileUploadResponse::class.java)
 
-                    // Show error message
-                    showToast(errorResponse.message)
-                    showLoading(false)
+            // after  implement repository and injection
+            viewModel.uploadImage(imageFile, description).observe(this) { result ->
+                if (result != null) {
+                    when (result) {
+                        is ResultState.Loading -> {
+                            showLoading(true)
+                        }
+
+                        is ResultState.Success -> {
+                            showToast(result.data.message)
+                            showLoading(false)
+                        }
+
+                        is ResultState.Error -> {
+                            showToast(result.error)
+                            showLoading(false)
+                        }
+                    }
                 }
             }
 

@@ -1,4 +1,4 @@
-package com.kisahcode.androidintermediate.api
+package com.kisahcode.androidintermediate.data.api
 
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor

@@ -1,4 +1,4 @@
-# Implement media upload using retrofit.
+# Refactoring code to repository and injection.
 
 This repository used for learning:
 
