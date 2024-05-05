@@ -1,0 +1,200 @@
+package com.kisahcode.androidintermediate
+
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.Color
+import androidx.appcompat.app.AppCompatActivity
+import android.os.Bundle
+import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
+import androidx.annotation.ColorInt
+import androidx.annotation.DrawableRes
+import androidx.core.content.res.ResourcesCompat
+import androidx.core.graphics.drawable.DrawableCompat
+
+import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.OnMapReadyCallback
+import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.BitmapDescriptor
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.MarkerOptions
+import com.kisahcode.androidintermediate.databinding.ActivityMapsBinding
+
+/**
+ * This activity displays a Google Map with various functionalities such as adding markers,
+ * changing map types, and handling user interactions.
+ */
+class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
+
+    private lateinit var mMap: GoogleMap
+    private lateinit var binding: ActivityMapsBinding
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        binding = ActivityMapsBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
+        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
+        val mapFragment = supportFragmentManager
+            .findFragmentById(R.id.map) as SupportMapFragment
+        mapFragment.getMapAsync(this)
+    }
+
+    /**
+     * Callback method invoked when the Google Map is ready for use.
+     *
+     * This method is called when the Google Map is initialized and ready for interaction. It sets
+     * up the map with initial settings, such as adding markers, setting up listeners, and adjusting
+     * the camera position. If Google Play services is not installed on the device, the user will be
+     * prompted to install it inside the SupportMapFragment. This method will only be triggered once
+     * the user has installed Google Play services and returned to the app.
+     *
+     * @param googleMap The GoogleMap instance representing the map that is ready for use.
+     */
+    override fun onMapReady(googleMap: GoogleMap) {
+        // Assign the GoogleMap instance to the local mMap variable
+        mMap = googleMap
+
+        // Add a marker in Sydney and move the camera
+        //val sydney = LatLng(-34.0, 151.0)
+        //mMap.addMarker(MarkerOptions().position(sydney).title("Marker in Sydney"))
+        //mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney))
+
+        // Add a marker for Dicoding Space and move the camera to its location
+        val dicodingSpace = LatLng(-6.8957643, 107.6338462)
+        mMap.addMarker(
+            MarkerOptions()
+                .position(dicodingSpace)
+                .title("Dicoding Space")
+                .snippet("Batik Kumeli No.50")
+        )
+        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(dicodingSpace, 15f))
+
+        // Set up a listener to add a new marker when the map is long-clicked
+        mMap.setOnMapLongClickListener { latLng ->
+            mMap.addMarker(
+                MarkerOptions()
+                    .position(latLng)
+                    .title("New Marker")
+                    .snippet("Lat: ${latLng.latitude} Long: ${latLng.longitude}")
+                    .icon(vectorToBitmap(R.drawable.ic_android, Color.parseColor("#3DDC84")))
+            )
+        }
+
+        // Set up a listener to display a marker's info window when a Point of Interest (POI) is clicked
+        mMap.setOnPoiClickListener { pointOfInterest ->
+            val poiMarker = mMap.addMarker(
+                MarkerOptions()
+                    .position(pointOfInterest.latLng)
+                    .title(pointOfInterest.name)
+                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_MAGENTA))
+            )
+            poiMarker?.showInfoWindow()
+        }
+
+    }
+
+    /**
+     * Initializes the options menu for the map activity.
+     *
+     * This method inflates the menu resource file (map_options.xml) to create the options menu
+     * for the map activity. The menu items include different map types such as Normal, Satellite,
+     * Terrain, and Hybrid. These options allow the user to change the map view type.
+     *
+     * @param menu The menu to initialize.
+     * @return Boolean value indicating whether the menu creation was successful.
+     */
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.map_options, menu)
+        return true
+    }
+
+    /**
+     * Handles selection of items in the options menu.
+     *
+     * This method is called when a menu item in the options menu is selected by the user.
+     * It determines which menu item was selected and performs the corresponding action.
+     * The available actions include changing the map view type to Normal, Satellite, Terrain,
+     * or Hybrid.
+     *
+     * @param item The menu item that was selected.
+     * @return Boolean value indicating whether the selection was handled successfully.
+     */
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.normal_type -> {
+                // Change the map view type to Normal
+                mMap.mapType = GoogleMap.MAP_TYPE_NORMAL
+                true
+            }
+            R.id.satellite_type -> {
+                // Change the map view type to Satellite
+                mMap.mapType = GoogleMap.MAP_TYPE_SATELLITE
+                true
+            }
+            R.id.terrain_type -> {
+                // Change the map view type to Terrain
+                mMap.mapType = GoogleMap.MAP_TYPE_TERRAIN
+                true
+            }
+            R.id.hybrid_type -> {
+                // Change the map view type to Hybrid
+                mMap.mapType = GoogleMap.MAP_TYPE_HYBRID
+                true
+            }
+            else -> {
+                // If the selected menu item is not recognized, call the superclass implementation
+                super.onOptionsItemSelected(item)
+            }
+        }
+    }
+
+    /**
+     * Converts a vector drawable to a BitmapDescriptor with specified color.
+     *
+     * This method takes a vector drawable resource ID and a color, and converts the vector
+     * drawable into a BitmapDescriptor, which can be used as a marker icon on the Google Map.
+     * It allows customization of the marker icon color.
+     *
+     * @param id The resource id of the vector drawable.
+     * @param color The color to apply to the vector drawable.
+     * @return The BitmapDescriptor representing the vector drawable with specified color.
+     */
+    private fun vectorToBitmap(@DrawableRes id: Int, @ColorInt color: Int): BitmapDescriptor {
+        // Retrieve the vector drawable from resources using its resource ID
+        val vectorDrawable = ResourcesCompat.getDrawable(resources, id, null)
+
+        // Check if the vector drawable is found in resources
+        if (vectorDrawable == null) {
+            Log.e("BitmapHelper", "Resource not found")
+            // If not found, return default marker icon
+            return BitmapDescriptorFactory.defaultMarker()
+        }
+
+        // Create a bitmap with dimensions matching the intrinsic dimensions of the vector drawable
+        val bitmap = Bitmap.createBitmap(
+            vectorDrawable.intrinsicWidth,
+            vectorDrawable.intrinsicHeight,
+            Bitmap.Config.ARGB_8888
+        )
+
+        // Create a canvas to draw the vector drawable onto the bitmap
+        val canvas = Canvas(bitmap)
+
+        // Set the bounds of the vector drawable to the bounds of the canvas
+        vectorDrawable.setBounds(0, 0, canvas.width, canvas.height)
+
+        // Apply the specified color to the vector drawable
+        DrawableCompat.setTint(vectorDrawable, color)
+
+        // Draw the vector drawable onto the canvas
+        vectorDrawable.draw(canvas)
+
+        // Convert the bitmap to a BitmapDescriptor and return it
+        return BitmapDescriptorFactory.fromBitmap(bitmap)
+    }
+}
