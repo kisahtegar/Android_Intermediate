@@ -1,6 +1,7 @@
 package com.kisahcode.androidintermediate
 
 import android.content.pm.PackageManager
+import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
@@ -23,6 +24,7 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.BitmapDescriptor
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.MapStyleOptions
 import com.google.android.gms.maps.model.MarkerOptions
 import com.kisahcode.androidintermediate.databinding.ActivityMapsBinding
 
@@ -101,6 +103,9 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
         // retrieves the user's current location.
         getMyLocation()
+
+        // Sets custom map style to the Google Map.
+        setMapStyle()
     }
 
     /**
@@ -239,5 +244,38 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             // If permission is not granted, launch permission request using requestPermissionLauncher
             requestPermissionLauncher.launch(android.Manifest.permission.ACCESS_FINE_LOCATION)
         }
+    }
+
+    /**
+     * Sets custom map style to the Google Map.
+     *
+     * This method attempts to set a custom map style defined in a JSON file resource. The map style
+     * resource file should be located in the res/raw directory. If the style parsing is successful,
+     * it applies the custom map style to the Google Map. If parsing fails or the style resource is
+     * not found, appropriate error messages are logged.
+     *
+     * For more information and customization of map styles, visit:
+     * [https://mapstyle.withgoogle.com]
+     */
+    private fun setMapStyle() {
+        try {
+            // Attempt to set the custom map style from the raw resource file
+            val success = mMap.setMapStyle(
+                MapStyleOptions.loadRawResourceStyle(this, R.raw.map_style)
+            )
+
+            // Check if style parsing was successful
+            if (!success) {
+                // Log an error message if style parsing failed
+                Log.e(TAG, "Style parsing failed.")
+            }
+        } catch (exception: Resources.NotFoundException) {
+            // Log an error message if the style resource file is not found
+            Log.e(TAG, "Can't find style. Error: ", exception)
+        }
+    }
+
+    companion object {
+        private val TAG = MapsActivity::class.java.simpleName
     }
 }
