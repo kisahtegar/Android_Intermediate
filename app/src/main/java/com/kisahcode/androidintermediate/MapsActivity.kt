@@ -24,6 +24,7 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.BitmapDescriptor
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.MapStyleOptions
 import com.google.android.gms.maps.model.MarkerOptions
 import com.kisahcode.androidintermediate.databinding.ActivityMapsBinding
@@ -36,6 +37,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private lateinit var mMap: GoogleMap
     private lateinit var binding: ActivityMapsBinding
+    private val boundsBuilder = LatLngBounds.Builder()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -106,6 +108,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
         // Sets custom map style to the Google Map.
         setMapStyle()
+
+        addManyMarker()
     }
 
     /**
@@ -275,7 +279,65 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         }
     }
 
+    /**
+     * Adds multiple markers for tourism places to the Google Map.
+     *
+     * This method adds multiple markers to the Google Map for each tourism place provided in the list.
+     * It iterates over the list of tourism places, creates a marker for each place with its name
+     * and coordinates, and includes the marker's position in the LatLngBounds Builder to adjust the
+     * camera position and zoom level to fit all markers within the viewport.
+     */
+    private fun addManyMarker() {
+        // List of tourism places with their names and coordinates
+        val tourismPlace = listOf(
+            TourismPlace("Floating Market Lembang", -6.8168954,107.6151046),
+            TourismPlace("The Great Asia Africa", -6.8331128,107.6048483),
+            TourismPlace("Rabbit Town", -6.8668408,107.608081),
+            TourismPlace("Alun-Alun Kota Bandung", -6.9218518,107.6025294),
+            TourismPlace("Orchid Forest Cikole", -6.780725, 107.637409),
+        )
+
+        // Iterate over the list of tourism places
+        tourismPlace.forEach { tourism ->
+            // Create a LatLng object representing the location of the tourism place
+            val latLng = LatLng(tourism.latitude, tourism.longitude)
+            // Add a marker to the map for the tourism place with its name
+            mMap.addMarker(MarkerOptions().position(latLng).title(tourism.name))
+            // Include the marker's position in the LatLngBounds Builder to adjust camera position
+            boundsBuilder.include(latLng)
+        }
+
+        // Build the LatLngBounds from the boundsBuilder
+        val bounds: LatLngBounds = boundsBuilder.build()
+
+        // Animate the camera to fit the entire bounds within the viewport with padding
+        mMap.animateCamera(
+            CameraUpdateFactory.newLatLngBounds(
+                bounds,
+                resources.displayMetrics.widthPixels,
+                resources.displayMetrics.heightPixels,
+                300
+            )
+        )
+    }
+
     companion object {
         private val TAG = MapsActivity::class.java.simpleName
     }
 }
+
+/**
+ * Data class representing a tourism place with name, latitude, and longitude.
+ *
+ * This data class encapsulates information about a tourism place including its name,
+ * latitude, and longitude coordinates.
+ *
+ * @property name The name of the tourism place.
+ * @property latitude The latitude coordinate of the tourism place.
+ * @property longitude The longitude coordinate of the tourism place.
+ */
+data class TourismPlace(
+    val name: String,
+    val latitude: Double,
+    val longitude: Double
+)
