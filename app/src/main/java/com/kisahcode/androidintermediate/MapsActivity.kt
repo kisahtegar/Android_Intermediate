@@ -1,5 +1,6 @@
 package com.kisahcode.androidintermediate
 
+import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
@@ -8,8 +9,10 @@ import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.ColorInt
 import androidx.annotation.DrawableRes
+import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.drawable.DrawableCompat
 
@@ -96,6 +99,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             poiMarker?.showInfoWindow()
         }
 
+        // retrieves the user's current location.
+        getMyLocation()
     }
 
     /**
@@ -196,5 +201,43 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
         // Convert the bitmap to a BitmapDescriptor and return it
         return BitmapDescriptorFactory.fromBitmap(bitmap)
+    }
+
+    /**
+     * Activity result launcher to handle location permission requests.
+     *
+     * This launcher registers an activity result callback for requesting location permissions.
+     * When the result is received, it invokes the [getMyLocation] method if the permission is granted.
+     */
+    private val requestPermissionLauncher =
+        // If location permission is granted, call the getMyLocation method
+        registerForActivityResult(
+            ActivityResultContracts.RequestPermission()
+        ) { isGranted: Boolean ->
+            if (isGranted) {
+                getMyLocation()
+            }
+        }
+
+    /**
+     * Requests and retrieves the user's current location.
+     *
+     * This method checks if the ACCESS_FINE_LOCATION permission is granted.
+     * If the permission is granted, it enables the My Location feature on the Google Map.
+     * If not, it launches a permission request using the requestPermissionLauncher.
+     */
+    private fun getMyLocation() {
+        // Check if the ACCESS_FINE_LOCATION permission is granted
+        if (ContextCompat.checkSelfPermission(
+                this.applicationContext,
+                android.Manifest.permission.ACCESS_FINE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED
+        ) {
+            // If permission is granted, enable My Location on the Google Map
+            mMap.isMyLocationEnabled = true
+        } else {
+            // If permission is not granted, launch permission request using requestPermissionLauncher
+            requestPermissionLauncher.launch(android.Manifest.permission.ACCESS_FINE_LOCATION)
+        }
     }
 }
