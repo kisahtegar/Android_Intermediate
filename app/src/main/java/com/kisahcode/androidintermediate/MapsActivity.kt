@@ -3,6 +3,7 @@ package com.kisahcode.androidintermediate
 import android.Manifest
 import android.content.IntentSender
 import android.content.pm.PackageManager
+import android.graphics.Color
 import android.location.Location
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -25,7 +26,9 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.gms.maps.model.PolylineOptions
 import com.kisahcode.androidintermediate.databinding.ActivityMapsBinding
 import java.util.concurrent.TimeUnit
 
@@ -41,6 +44,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var locationRequest: LocationRequest
     private lateinit var locationCallback: LocationCallback
     private var isTracking = false
+    private var allLatLng = ArrayList<LatLng>()
+    private var boundsBuilder = LatLngBounds.Builder()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -77,6 +82,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         // Set up UI elements and click listener for tracking button
         binding.btnStart.setOnClickListener {
             if (!isTracking) {
+                clearMaps()
                 updateTrackingStatus(true)
                 startLocationUpdates()
             } else {
@@ -276,7 +282,9 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
      * Creates a location callback to receive location updates.
      *
      * This method defines a LocationCallback object to handle location updates. When the location
-     * updates are received, it logs the latitude and longitude for debugging purposes.
+     * updates are received, it logs the latitude and longitude for debugging purposes. It also draws
+     * a polyline connecting all received locations on the map and adjusts the camera to include
+     * the new location.
      */
     private fun createLocationCallback() {
         // Define a LocationCallback object to handle location updates
@@ -286,6 +294,24 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                 for (location in locationResult.locations) {
                     // Log the latitude and longitude of each location for debugging
                     Log.d(TAG, "onLocationResult: " + location.latitude + ", " + location.longitude)
+
+                    val lastLatLng = LatLng(location.latitude, location.longitude)
+
+                    // Add the location to the list for drawing the polyline
+                    allLatLng.add(lastLatLng)
+
+                    // Draw a polyline on the map connecting all received locations
+                    mMap.addPolyline(
+                        PolylineOptions()
+                            .color(Color.CYAN)
+                            .width(10f)
+                            .addAll(allLatLng)
+                    )
+
+                    // Include the new location in the bounds for adjusting camera position
+                    boundsBuilder.include(lastLatLng)
+                    val bounds: LatLngBounds = boundsBuilder.build()
+                    mMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, 64))
                 }
             }
         }
@@ -362,6 +388,21 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         } else {
             binding.btnStart.text = getString(R.string.start_running)
         }
+    }
+
+    /**
+     * Clears all markers and polylines from the map.
+     *
+     * This method clears all markers and polylines drawn on the map and resets the list of LatLng
+     * coordinates and bounds builder used for drawing polylines and adjusting camera position.
+     */
+    private fun clearMaps() {
+        // Clear all markers and polylines from the map
+        mMap.clear()
+
+        // Clear the list of LatLng coordinates and reset the bounds builder
+        allLatLng.clear()
+        boundsBuilder = LatLngBounds.Builder()
     }
 
     companion object {
