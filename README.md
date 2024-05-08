@@ -1,4 +1,4 @@
-# Implement Integration Testing Fragment with MockWebServer and Idling Resource
+# Implement End-to-End Testing with Espresso
 
 This repository used for learning:
 

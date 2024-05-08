@@ -85,6 +85,7 @@ dependencies {
     androidTestImplementation(libs.kotlinx.coroutines.test) //TestDispatcher
     debugImplementation(libs.androidx.fragment.testing) //launchFragmentInContainer
     androidTestImplementation(libs.espresso.contrib) //RecyclerViewActions
+    androidTestImplementation(libs.androidx.espresso.intents) //IntentsTestRule
 
     // Mock Web Server
     androidTestImplementation(libs.mockwebserver)
