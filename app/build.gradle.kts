@@ -40,6 +40,15 @@ android {
     }
     buildFeatures {
         viewBinding = true
+        buildConfig = true
+    }
+    packaging {
+        resources {
+            excludes += listOf("META-INF/AL2.0", "META-INF/LGPL2.1")
+        }
+    }
+    testOptions {
+        animationsDisabled = true
     }
 }
 
@@ -74,6 +83,14 @@ dependencies {
     // Special Instrumentation Testing
     androidTestImplementation(libs.androidx.core.testing) // InstantTaskExecutorRule
     androidTestImplementation(libs.kotlinx.coroutines.test) //TestDispatcher
+    debugImplementation(libs.androidx.fragment.testing) //launchFragmentInContainer
+    androidTestImplementation(libs.espresso.contrib) //RecyclerViewActions
+
+    // Mock Web Server
+    androidTestImplementation(libs.mockwebserver)
+    androidTestImplementation(libs.okhttp3.okhttp.tls)
+    implementation(libs.espresso.idling.resource)
+    androidTestImplementation(libs.kotlinx.coroutines.test.v173) //TestDispatcher
 
     // Room
     implementation(libs.androidx.room.runtime)
