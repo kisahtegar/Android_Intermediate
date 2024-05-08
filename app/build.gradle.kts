@@ -44,6 +44,7 @@ android {
 }
 
 dependencies {
+    testImplementation("junit:junit:4.12")
     // Desugaring
     coreLibraryDesugaring(libs.desugar.jdk.libs)
 
