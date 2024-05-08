@@ -6,6 +6,17 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import kotlinx.parcelize.Parcelize
 
+/**
+ * Represents a single news entity stored locally in the database.
+ *
+ * This class is used to define the structure of the `news` table in the local database.
+ * Each instance of NewsEntity represents a single news item.
+ *
+ * @property title The title of the news.
+ * @property publishedAt The date and time when the news was published.
+ * @property urlToImage The URL to the image associated with the news.
+ * @property url The URL to the full article.
+ */
 @Parcelize
 @Entity(tableName = "news")
 class NewsEntity(
