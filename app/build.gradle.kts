@@ -70,6 +70,7 @@ dependencies {
     // Special Testing
     testImplementation(libs.androidx.core.testing) // InstantTaskExecutorRule
     androidTestImplementation(libs.androidx.core.testing) // InstantTaskExecutorRule
+    testImplementation(libs.kotlinx.coroutines.test) //TestDispatcher
 
     // Room
     implementation(libs.androidx.room.runtime)
