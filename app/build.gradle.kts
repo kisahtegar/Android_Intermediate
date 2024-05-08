@@ -44,7 +44,6 @@ android {
 }
 
 dependencies {
-    testImplementation("junit:junit:4.12")
     // Desugaring
     coreLibraryDesugaring(libs.desugar.jdk.libs)
 
@@ -63,6 +62,14 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+
+    // Mockito
+    testImplementation(libs.mockito.core)
+    testImplementation(libs.mockito.inline)
+
+    // Special Testing
+    testImplementation(libs.androidx.core.testing) // InstantTaskExecutorRule
+    androidTestImplementation(libs.androidx.core.testing) // InstantTaskExecutorRule
 
     // Room
     implementation(libs.androidx.room.runtime)
