@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import kotlinx.coroutines.CoroutineScope
 
 /**
  * StudentDatabase serves as the main access point for the underlying Room database.
@@ -14,6 +15,11 @@ import androidx.room.RoomDatabase
 @Database(entities = [Student::class, University::class, Course::class, CourseStudentCrossRef::class], version = 1, exportSchema = false)
 abstract class StudentDatabase : RoomDatabase() {
 
+    /**
+     * Retrieves the DAO interface for accessing student-related data.
+     *
+     * @return StudentDao object for accessing database operations related to students.
+     */
     abstract fun studentDao(): StudentDao
 
     companion object {
@@ -30,12 +36,30 @@ abstract class StudentDatabase : RoomDatabase() {
          * @return Singleton instance of the StudentDatabase.
          */
         @JvmStatic
-        fun getDatabase(context: Context): StudentDatabase {
+        fun getDatabase(context: Context, applicationScope: CoroutineScope): StudentDatabase {
             if (INSTANCE == null) {
                 synchronized(StudentDatabase::class.java) {
                     INSTANCE = Room.databaseBuilder(context.applicationContext,
                             StudentDatabase::class.java, "student_database")
                         .fallbackToDestructiveMigration(false)
+
+                        // Uncomment the line below if you want to use a pre-populated database from assets
+                        .createFromAsset("student_database.db")
+
+                        // Uncomment the block below if you want to use a pre-populated database with addCallback
+//                        .addCallback(object :Callback(){
+//                            override fun onCreate(db: SupportSQLiteDatabase) {
+//                                super.onCreate(db)
+//                                INSTANCE?.let { database ->
+//                                    applicationScope.launch {
+//                                        val studentDao = database.studentDao()
+//                                        studentDao.insertStudent(InitialDataSource.getStudents())
+//                                        studentDao.insertUniversity(InitialDataSource.getUniversities())
+//                                        studentDao.insertCourse(InitialDataSource.getCourses())
+//                                        studentDao.insertCourseStudentCrossRef(InitialDataSource.getCourseStudentRelation())                                }
+//                                }
+//                            }
+//                        })
                         .build()
                 }
             }

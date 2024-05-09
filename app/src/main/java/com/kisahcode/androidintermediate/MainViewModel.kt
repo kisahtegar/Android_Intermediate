@@ -3,12 +3,10 @@ package com.kisahcode.androidintermediate
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewModelScope
 import com.kisahcode.androidintermediate.database.Student
 import com.kisahcode.androidintermediate.database.StudentAndUniversity
 import com.kisahcode.androidintermediate.database.StudentWithCourse
 import com.kisahcode.androidintermediate.database.UniversityAndStudent
-import kotlinx.coroutines.launch
 
 /**
  * ViewModel class responsible for handling the presentation logic and managing data for the MainActivity.
@@ -16,13 +14,6 @@ import kotlinx.coroutines.launch
  * @property studentRepository Repository class for accessing student-related data.
  */
 class MainViewModel(private val studentRepository: StudentRepository) : ViewModel() {
-
-    /**
-     * Initializes the ViewModel by inserting initial data into the database.
-     */
-    init {
-        insertAllData()
-    }
 
     /**
      * Retrieves all students from the database.
@@ -52,12 +43,6 @@ class MainViewModel(private val studentRepository: StudentRepository) : ViewMode
      */
     fun getAllStudentWithCourse(): LiveData<List<StudentWithCourse>> = studentRepository.getAllStudentWithCourse()
 
-    /**
-     * Inserts initial data into the database asynchronously.
-     */
-    private fun insertAllData() = viewModelScope.launch {
-        studentRepository.insertAllData()
-    }
 }
 
 /**
