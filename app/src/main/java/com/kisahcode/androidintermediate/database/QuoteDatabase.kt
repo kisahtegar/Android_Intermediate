@@ -19,6 +19,13 @@ import com.kisahcode.androidintermediate.network.QuoteResponseItem
 )
 abstract class QuoteDatabase : RoomDatabase() {
 
+    /**
+     * Provides access to the QuoteDao interface for performing database operations related to quotes.
+     *
+     * @return An instance of the QuoteDao interface.
+     */
+    abstract fun quoteDao(): QuoteDao
+
     companion object {
         @Volatile
         private var INSTANCE: QuoteDatabase? = null

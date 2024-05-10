@@ -1,7 +1,7 @@
-# Paging 3 from Network
+# Paging 3 with RemoteMediator from Network
 
-Learn to use the paging 3 library to display data gradually in RecyclerView with the data source 
-coming from the network or API service:
+Learn how to apply RemoteMediator to save data originating from the network into a database, so that 
+applications can be run even without an internet connection.
 
 | Nama Project                  | My Unlimited Quotes            |
 |-------------------------------|--------------------------------|

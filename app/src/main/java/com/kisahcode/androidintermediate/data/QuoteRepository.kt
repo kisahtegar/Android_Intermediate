@@ -1,6 +1,7 @@
 package com.kisahcode.androidintermediate.data
 
 import androidx.lifecycle.LiveData
+import androidx.paging.ExperimentalPagingApi
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
@@ -30,13 +31,17 @@ class QuoteRepository(private val quoteDatabase: QuoteDatabase, private val apiS
      * @return LiveData object containing paginated quote data.
      */
     fun getQuote(): LiveData<PagingData<QuoteResponseItem>> {
+        // Initialize a Pager with the specified configuration and paging source factory
+        @OptIn(ExperimentalPagingApi::class)
         return Pager(
             config = PagingConfig(
                 pageSize = 5
             ),
+            // Use QuoteRemoteMediator as the remote mediator for loading data from the network
+            remoteMediator = QuoteRemoteMediator(quoteDatabase, apiService),
+            // Use QuoteDao's getAllQuote() method as the local paging source
             pagingSourceFactory = {
-                // Create a new instance of QuotePagingSource with the ApiService
-                QuotePagingSource(apiService)
+                quoteDatabase.quoteDao().getAllQuote()
             }
         ).liveData
     }
