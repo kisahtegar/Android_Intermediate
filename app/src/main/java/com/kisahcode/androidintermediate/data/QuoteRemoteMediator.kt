@@ -6,6 +6,7 @@ import androidx.paging.PagingState
 import androidx.paging.RemoteMediator
 import androidx.room.withTransaction
 import com.kisahcode.androidintermediate.database.QuoteDatabase
+import com.kisahcode.androidintermediate.database.RemoteKeys
 import com.kisahcode.androidintermediate.network.ApiService
 import com.kisahcode.androidintermediate.network.QuoteResponseItem
 
@@ -55,7 +56,31 @@ class QuoteRemoteMediator(
       loadType: LoadType,
       state: PagingState<Int, QuoteResponseItem>
    ): MediatorResult {
-      val page = INITIAL_PAGE_INDEX
+      // Determine the page to be loaded based on the load type
+      val page = when (loadType) {
+         LoadType.REFRESH ->{
+            // For a refresh, get the next key closest to the current position
+            val remoteKeys = getRemoteKeyClosestToCurrentPosition(state)
+            // Calculate the page based on the next key
+            remoteKeys?.nextKey?.minus(1) ?: INITIAL_PAGE_INDEX
+         }
+         LoadType.PREPEND -> {
+            // For prepending data, get the previous key for the first item
+            val remoteKeys = getRemoteKeyForFirstItem(state)
+            // Calculate the previous key
+            val prevKey = remoteKeys?.prevKey
+               ?: return MediatorResult.Success(endOfPaginationReached = remoteKeys != null)
+            prevKey
+         }
+         LoadType.APPEND -> {
+            // For appending data, get the next key for the last item
+            val remoteKeys = getRemoteKeyForLastItem(state)
+            // Calculate the next key
+            val nextKey = remoteKeys?.nextKey
+               ?: return MediatorResult.Success(endOfPaginationReached = remoteKeys != null)
+            nextKey
+         }
+      }
 
       try {
          // Fetch quote data from the remote API
@@ -67,9 +92,21 @@ class QuoteRemoteMediator(
          // Insert the fetched data into the local database
          database.withTransaction {
             if (loadType == LoadType.REFRESH) {
-               // If it's a refresh, delete existing data
+               // If it's a refresh, delete existing data and remote keys
+               database.remoteKeysDao().deleteRemoteKeys()
                database.quoteDao().deleteAll()
             }
+
+            // Calculate previous and next keys for the fetched data
+            val prevKey = if (page == 1) null else page - 1
+            val nextKey = if (endOfPaginationReached) null else page + 1
+
+            // Map the fetched data to RemoteKeys and insert them into the database
+            val keys = responseData.map {
+               RemoteKeys(id = it.id, prevKey = prevKey, nextKey = nextKey)
+            }
+            database.remoteKeysDao().insertAll(keys)
+
             // Insert the retrieved data into the local database
             database.quoteDao().insertQuote(responseData)
          }
@@ -79,6 +116,44 @@ class QuoteRemoteMediator(
       } catch (exception: Exception) {
          // Return an error result if an exception occurs during data loading
          return MediatorResult.Error(exception)
+      }
+   }
+
+   /**
+    * Retrieves the remote key for the last item loaded in the current page.
+    *
+    * @param state The current PagingState, including information about the currently loaded data.
+    * @return The RemoteKeys object associated with the last item, or null if not found.
+    */
+   private suspend fun getRemoteKeyForLastItem(state: PagingState<Int, QuoteResponseItem>): RemoteKeys? {
+      return state.pages.lastOrNull { it.data.isNotEmpty() }?.data?.lastOrNull()?.let { data ->
+         database.remoteKeysDao().getRemoteKeysId(data.id)
+      }
+   }
+
+   /**
+    * Retrieves the remote key for the first item loaded in the current page.
+    *
+    * @param state The current PagingState, including information about the currently loaded data.
+    * @return The RemoteKeys object associated with the first item, or null if not found.
+    */
+   private suspend fun getRemoteKeyForFirstItem(state: PagingState<Int, QuoteResponseItem>): RemoteKeys? {
+      return state.pages.firstOrNull { it.data.isNotEmpty() }?.data?.firstOrNull()?.let { data ->
+         database.remoteKeysDao().getRemoteKeysId(data.id)
+      }
+   }
+
+   /**
+    * Retrieves the remote key closest to the current position in the list.
+    *
+    * @param state The current PagingState, including information about the currently loaded data.
+    * @return The RemoteKeys object associated with the item closest to the current position, or null if not found.
+    */
+   private suspend fun getRemoteKeyClosestToCurrentPosition(state: PagingState<Int, QuoteResponseItem>): RemoteKeys? {
+      return state.anchorPosition?.let { position ->
+         state.closestItemToPosition(position)?.id?.let { id ->
+            database.remoteKeysDao().getRemoteKeysId(id)
+         }
       }
    }
 }

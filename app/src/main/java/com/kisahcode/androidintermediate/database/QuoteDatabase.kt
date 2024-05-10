@@ -13,8 +13,8 @@ import com.kisahcode.androidintermediate.network.QuoteResponseItem
  * with the quotes data.
  */
 @Database(
-    entities = [QuoteResponseItem::class],
-    version = 1,
+    entities = [QuoteResponseItem::class, RemoteKeys::class],
+    version = 2,
     exportSchema = false
 )
 abstract class QuoteDatabase : RoomDatabase() {
@@ -25,6 +25,13 @@ abstract class QuoteDatabase : RoomDatabase() {
      * @return An instance of the QuoteDao interface.
      */
     abstract fun quoteDao(): QuoteDao
+
+    /**
+     * Provides access to the RemoteKeysDao interface for performing database operations related to remote keys.
+     *
+     * @return An instance of the RemoteKeysDao interface.
+     */
+    abstract fun remoteKeysDao(): RemoteKeysDao
 
     companion object {
         @Volatile
