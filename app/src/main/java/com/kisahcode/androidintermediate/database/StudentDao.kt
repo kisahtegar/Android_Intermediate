@@ -1,6 +1,7 @@
 package com.kisahcode.androidintermediate.database
 
 import androidx.lifecycle.LiveData
+import androidx.paging.DataSource
 import androidx.room.*
 import androidx.sqlite.db.SupportSQLiteQuery
 
@@ -52,12 +53,20 @@ interface StudentDao {
     suspend fun insertCourseStudentCrossRef(courseStudentCrossRef: List<CourseStudentCrossRef>)
 
     /**
-     * Retrieves all students from the database.
+     * Retrieves all students from the database using Paging 2.
      *
-     * @return LiveData containing a list of all students in the database.
+     * This function returns a `DataSource.Factory` that provides access to a paginated list of students.
+     * The returned `DataSource` is responsible for loading data in chunks or pages, enabling efficient
+     * loading of large datasets. Pagination allows for smoother scrolling and reduces memory consumption
+     * by loading only a subset of data into memory at a time.
+     *
+     * @param query A SQLite query specifying custom selection criteria, sorting, or other database operations.
+     *              This query is used by Paging to fetch the data from the database.
+     * @return A `DataSource.Factory` that generates instances of `DataSource` responsible for loading paginated data.
+     *         The `DataSource` loads data from the database according to the provided query and handles pagination.
      */
     @RawQuery(observedEntities = [Student::class])
-    fun getAllStudent(query: SupportSQLiteQuery): LiveData<List<Student>>
+    fun getAllStudent(query: SupportSQLiteQuery): DataSource.Factory<Int, Student>
 
     /**
      * Retrieves all students with their associated universities from the database.

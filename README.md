@@ -1,6 +1,6 @@
-# Performing Sorting in the Database Room
+# Paging 2 from Database
 
-Implementing RawQuery to sort data in the application:
+Use of the paging library to display data gradually in RecyclerView:
 
 | Nama Project                  | My Student Data                |
 |-------------------------------|--------------------------------|
@@ -10,4 +10,4 @@ Implementing RawQuery to sort data in the application:
 | Language                      | Kotlin                         |
 | Build Configuration Language  | Kotlin DSL                     |
 
-<img src="preview.gif" alt="Preview 1" width="411" height="914">
+<img src="preview.png" alt="Preview 1" width="411" height="914">

@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.switchMap
+import androidx.paging.PagedList
 import com.kisahcode.androidintermediate.database.Student
 import com.kisahcode.androidintermediate.database.StudentAndUniversity
 import com.kisahcode.androidintermediate.database.StudentWithCourse
@@ -37,9 +38,15 @@ class MainViewModel(private val studentRepository: StudentRepository) : ViewMode
     /**
      * Retrieves all students from the database, possibly sorted based on the current sorting type.
      *
-     * @return LiveData object containing a list of students, possibly sorted.
+     * This function returns a `LiveData` object containing a `PagedList` of students, where the data
+     * is loaded in a paginated manner using Paging 2. The list of students can be optionally sorted
+     * based on the current sorting type before being paginated.
+     *
+     * @return LiveData object containing a `PagedList` of students, possibly sorted based on the current
+     *         sorting type, and loaded in a paginated manner using Paging 2.
      */
-    fun getAllStudent(): LiveData<List<Student>> = _sort.switchMap {
+    @Suppress("DEPRECATION")
+    fun getAllStudent(): LiveData<PagedList<Student>> = _sort.switchMap {
         studentRepository.getAllStudent(it)
     }
 

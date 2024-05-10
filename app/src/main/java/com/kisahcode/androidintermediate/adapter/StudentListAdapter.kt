@@ -2,6 +2,7 @@ package com.kisahcode.androidintermediate.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.paging.PagedListAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -9,12 +10,15 @@ import com.kisahcode.androidintermediate.database.Student
 import com.kisahcode.androidintermediate.databinding.ItemStudentBinding
 
 /**
- * Adapter for displaying a list of students in a RecyclerView.
+ * Adapter for displaying a list of students in a RecyclerView using Paging 2.
+ *
+ * This adapter extends `PagedListAdapter` to efficiently display a paginated list of students in a RecyclerView.
+ * It utilizes the Paging library's `DiffUtil.ItemCallback` for efficient item comparison and update calculations.
  *
  * @property WordsComparator DiffUtil.ItemCallback implementation to compare items in the list.
  */
 class StudentListAdapter :
-    ListAdapter<Student, StudentListAdapter.WordViewHolder>(WordsComparator()) {
+    PagedListAdapter<Student, StudentListAdapter.WordViewHolder>(WordsComparator()) {
 
     /**
      * Creates a new WordViewHolder instance and inflates the item layout.
@@ -35,7 +39,8 @@ class StudentListAdapter :
      * @param position The position of the item within the adapter's data set.
      */
     override fun onBindViewHolder(holder: WordViewHolder, position: Int) {
-        holder.bind(getItem(position))
+        val student = getItem(position) as Student
+        holder.bind(student)
     }
 
     /**
