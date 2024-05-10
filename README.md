@@ -1,6 +1,6 @@
-# Relation Database Room
+# Performing Sorting in the Database Room
 
-This repository used for learning:
+Implementing RawQuery to sort data in the application:
 
 | Nama Project                  | My Student Data                |
 |-------------------------------|--------------------------------|

@@ -4,6 +4,8 @@ import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
+import android.widget.PopupMenu
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -12,6 +14,7 @@ import com.kisahcode.androidintermediate.adapter.StudentListAdapter
 import com.kisahcode.androidintermediate.adapter.StudentWithCourseAdapter
 import com.kisahcode.androidintermediate.adapter.UniversityAndStudentAdapter
 import com.kisahcode.androidintermediate.databinding.ActivityMainBinding
+import com.kisahcode.androidintermediate.helper.SortType
 
 /**
  * MainActivity class responsible for displaying student-related data in a RecyclerView.
@@ -46,22 +49,31 @@ class MainActivity : AppCompatActivity() {
             R.id.action_single_table -> {
                 // Load student data
                 getStudent()
+                showSortingOptionMenu(true)
                 return true
             }
             R.id.action_many_to_one -> {
                 // Load student and university data
                 getStudentAndUniversity()
+                showSortingOptionMenu(false)
                 true
             }
             R.id.action_one_to_many -> {
                 // Load university and student data
                 getUniversityAndStudent()
+                showSortingOptionMenu(false)
                 true
             }
 
             R.id.action_many_to_many -> {
                 // Load student with course data
                 getStudentWithCourse()
+                showSortingOptionMenu(false)
+                true
+            }
+
+            R.id.action_sort -> {
+                showSortingPopupMenu()
                 true
             }
 
@@ -153,6 +165,59 @@ class MainActivity : AppCompatActivity() {
             // Submit the new list of student-course pairs to the adapter
             Log.d(TAG, "getStudentWithCourse: $it")
             adapter.submitList(it)
+        }
+    }
+
+    /**
+     * Shows or hides the sorting option menu item in the activity's options menu based on the provided flag.
+     *
+     * If the flag is true, the sorting option menu item is shown; otherwise, it is hidden. This
+     * function is used to dynamically control the visibility of the sorting option menu item based
+     * on the current context or state of the activity.
+     *
+     * @param isShow Boolean flag indicating whether to show or hide the sorting option menu item.
+     *               True to show the menu item, false to hide it.
+     */
+    private fun showSortingOptionMenu(isShow: Boolean) {
+        // Find the sorting option menu item by its ID
+        val view = findViewById<View>(R.id.action_sort) ?: return
+
+        // Set the visibility of the sorting option menu item based on the provided flag
+        view.visibility = if (isShow) View.VISIBLE else View.GONE
+    }
+
+    /**
+     * Shows the sorting options popup menu when the sorting menu item is clicked.
+     *
+     * The sorting options include sorting the displayed data in ascending order, descending order,
+     * or in a random order. This function inflates a popup menu with sorting options and listens
+     * for user selections. When a sorting option is selected, it notifies the MainViewModel to
+     * change the sorting type accordingly.
+     */
+    private fun showSortingPopupMenu() {
+        // Find the anchor view for the popup menu
+        val view = findViewById<View>(R.id.action_sort) ?: return
+
+        // Create a new instance of PopupMenu with the current activity context and the anchor view
+        PopupMenu(this, view).run {
+            // Inflate the menu layout containing sorting options
+            menuInflater.inflate(R.menu.sorting_menu, menu)
+
+            // Set a listener to handle menu item clicks
+            setOnMenuItemClickListener {
+                // Determine which sorting option was clicked and notify the MainViewModel to change the sorting type
+                mainViewModel.changeSortType(
+                    when (it.itemId) {
+                        R.id.action_ascending -> SortType.ASCENDING
+                        R.id.action_descending -> SortType.DESCENDING
+                        else -> SortType.RANDOM
+                    }
+                )
+                true// Indicate that the click event has been handled
+            }
+
+            // Show the popup menu anchored to the anchor view
+            show()
         }
     }
 

@@ -1,12 +1,15 @@
 package com.kisahcode.androidintermediate
 
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.switchMap
 import com.kisahcode.androidintermediate.database.Student
 import com.kisahcode.androidintermediate.database.StudentAndUniversity
 import com.kisahcode.androidintermediate.database.StudentWithCourse
 import com.kisahcode.androidintermediate.database.UniversityAndStudent
+import com.kisahcode.androidintermediate.helper.SortType
 
 /**
  * ViewModel class responsible for handling the presentation logic and managing data for the MainActivity.
@@ -15,12 +18,30 @@ import com.kisahcode.androidintermediate.database.UniversityAndStudent
  */
 class MainViewModel(private val studentRepository: StudentRepository) : ViewModel() {
 
+    private val _sort = MutableLiveData<SortType>()
+
+    init {
+        // Initialize the sorting type to ASCENDING by default.
+        _sort.value = SortType.ASCENDING
+    }
+
     /**
-     * Retrieves all students from the database.
+     * Changes the sorting type for the list of students.
      *
-     * @return LiveData object containing a list of students.
+     * @param sortType The new sorting type to be applied.
      */
-    fun getAllStudent(): LiveData<List<Student>> = studentRepository.getAllStudent()
+    fun changeSortType(sortType: SortType) {
+        _sort.value = sortType
+    }
+
+    /**
+     * Retrieves all students from the database, possibly sorted based on the current sorting type.
+     *
+     * @return LiveData object containing a list of students, possibly sorted.
+     */
+    fun getAllStudent(): LiveData<List<Student>> = _sort.switchMap {
+        studentRepository.getAllStudent(it)
+    }
 
     /**
      * Retrieves all students with their associated universities from the database.

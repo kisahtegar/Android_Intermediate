@@ -2,6 +2,7 @@ package com.kisahcode.androidintermediate.database
 
 import androidx.lifecycle.LiveData
 import androidx.room.*
+import androidx.sqlite.db.SupportSQLiteQuery
 
 /**
  * Data Access Object (DAO) for accessing student-related data in the database.
@@ -55,8 +56,8 @@ interface StudentDao {
      *
      * @return LiveData containing a list of all students in the database.
      */
-    @Query("SELECT * from student")
-    fun getAllStudent(): LiveData<List<Student>>
+    @RawQuery(observedEntities = [Student::class])
+    fun getAllStudent(query: SupportSQLiteQuery): LiveData<List<Student>>
 
     /**
      * Retrieves all students with their associated universities from the database.
