@@ -86,6 +86,7 @@ class MainActivity : AppCompatActivity() {
         mainViewModel.getAllStudent().observe(this) {
             // Submit the new list of students to the adapter
             Log.d(TAG, "getStudent: $it")
+            it.forEach(::println)
             adapter.submitList(it)
         }
     }

@@ -6,10 +6,12 @@ import androidx.room.*
  * Entity representing a student in the database.
  *
  * Each student has a unique studentId, a name, and is associated with a university.
+ * Additionally, it includes information about whether the student is a graduate or not.
  *
  * @property studentId Unique identifier for the student.
  * @property name Name of the student.
  * @property univId Identifier of the university the student is associated with.
+ * @property isGraduate Flag indicating whether the student is a graduate or not. Defaults to false.
  */
 @Entity
 data class Student(
@@ -17,6 +19,8 @@ data class Student(
     val studentId: Int,
     val name: String,
     val univId: Int,
+    @ColumnInfo(defaultValue = "false")
+    val isGraduate: Boolean? = false
 )
 
 /**
