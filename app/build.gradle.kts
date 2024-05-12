@@ -66,4 +66,12 @@ dependencies {
 
     // Paging
     implementation(libs.androidx.paging.runtime.ktx)
+
+    // Testing
+    testImplementation(libs.androidx.core.testing)
+    testImplementation(libs.kotlinx.coroutines.test)
+    androidTestImplementation(libs.androidx.core.testing)
+    androidTestImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.mockito.core)
+    testImplementation(libs.mockito.inline)
 }

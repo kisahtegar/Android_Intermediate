@@ -62,7 +62,7 @@ class QuoteListAdapter : PagingDataAdapter<QuoteResponseItem, QuoteListAdapter.M
 
     companion object {
         // DiffUtil.ItemCallback implementation for comparing QuoteResponseItem objects
-        private val DIFF_CALLBACK = object : DiffUtil.ItemCallback<QuoteResponseItem>() {
+        val DIFF_CALLBACK = object : DiffUtil.ItemCallback<QuoteResponseItem>() {
             override fun areItemsTheSame(oldItem: QuoteResponseItem, newItem: QuoteResponseItem): Boolean {
                 return oldItem == newItem
             }
