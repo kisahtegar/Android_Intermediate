@@ -4,11 +4,15 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import com.kisahcode.androidintermediate.databinding.ActivityMainBinding
+import java.util.Date
 
 /**
  * MainActivity represents the main screen of the application where users interact with various
@@ -18,6 +22,7 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var auth: FirebaseAuth
+    private lateinit var db: FirebaseDatabase
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,6 +40,35 @@ class MainActivity : AppCompatActivity() {
             startActivity(Intent(this, LoginActivity::class.java))
             finish()
             return
+        }
+
+        // Initialize Firebase Realtime Database
+        db = Firebase.database
+        val messagesRef = db.reference.child(MESSAGES_CHILD)
+
+        // Set up functionality to send messages to the database
+        binding.sendButton.setOnClickListener {
+            // Create a Message object with the entered message, user's display name, photo URL, and current timestamp
+            val friendlyMessage = Message(
+                binding.messageEditText.text.toString(),
+                firebaseUser.displayName.toString(),
+                firebaseUser.photoUrl.toString(),
+                Date().time
+            )
+
+            // Push the message to the database
+            messagesRef.push().setValue(friendlyMessage) { error, _ ->
+                if (error != null) {
+                    // Display a toast message if there is an error sending the message
+                    Toast.makeText(this, getString(R.string.send_error) + error.message, Toast.LENGTH_SHORT).show()
+                } else {
+                    // Display a toast message if the message is sent successfully
+                    Toast.makeText(this, getString(R.string.send_success), Toast.LENGTH_SHORT).show()
+                }
+            }
+
+            // Clear the message text field after sending the message
+            binding.messageEditText.setText("")
         }
     }
 
@@ -68,5 +102,9 @@ class MainActivity : AppCompatActivity() {
         // Navigates the user back to the LoginActivity and finishes the MainActivity
         startActivity(Intent(this, LoginActivity::class.java))
         finish()
+    }
+
+    companion object {
+        const val MESSAGES_CHILD = "messages"
     }
 }

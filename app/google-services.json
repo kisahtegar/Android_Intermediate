@@ -1,6 +1,7 @@
 {
   "project_info": {
     "project_number": "987533573108",
+    "firebase_url": "https://android-intermediate-f2fb8-default-rtdb.firebaseio.com",
     "project_id": "android-intermediate-f2fb8",
     "storage_bucket": "android-intermediate-f2fb8.appspot.com"
   },
@@ -13,6 +14,14 @@
         }
       },
       "oauth_client": [
+        {
+          "client_id": "987533573108-c8ifj2vi7mefchgg0gv0tbkrhiha2m1f.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.kisahcode.androidintermediate",
+            "certificate_hash": "c2ba64616652d49d2d0b1ec5cc8a69f238d7301f"
+          }
+        },
         {
           "client_id": "987533573108-aie4d0jbe9mh7te1hcevbpgoc47673a4.apps.googleusercontent.com",
           "client_type": 3
