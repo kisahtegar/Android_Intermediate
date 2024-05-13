@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "987533573108",
+    "project_id": "android-intermediate-f2fb8",
+    "storage_bucket": "android-intermediate-f2fb8.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:987533573108:android:cbe753ee85dcd4958e97a1",
+        "android_client_info": {
+          "package_name": "com.kisahcode.androidintermediate"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAJrIDClp1zZjrMOo1RmBPWcOPFvJZn12M"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
