@@ -12,7 +12,12 @@
           "package_name": "com.kisahcode.androidintermediate"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "987533573108-aie4d0jbe9mh7te1hcevbpgoc47673a4.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyAJrIDClp1zZjrMOo1RmBPWcOPFvJZn12M"
@@ -20,7 +25,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "987533573108-aie4d0jbe9mh7te1hcevbpgoc47673a4.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }
