@@ -11,3 +11,4 @@ This repository used for learning:
 | Build Configuration Language  | Kotlin DSL                     |
 
 <img src="preview_1.gif" alt="Preview 1" width="411" height="914">
+<img src="preview_2.gif" alt="Preview 1" width="999" height="880">
