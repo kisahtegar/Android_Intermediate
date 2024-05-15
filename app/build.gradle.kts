@@ -55,6 +55,7 @@ dependencies {
     implementation(libs.play.services.auth)
     implementation(libs.firebase.database.ktx)
     implementation(libs.firebase.ui.database)
+    implementation(libs.firebase.messaging.ktx)
 
     implementation(libs.glide)
 }
